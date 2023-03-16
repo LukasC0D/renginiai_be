@@ -9,12 +9,13 @@ class Event extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'pavadinimas',
-        'data',
-        'aprašymas',
-        'renginio_vieta'
+        'name',
+        'date',
+        'description',
+        'place'
     ];
     protected $hidden = [
-        'timestamps',
+        'created_at',
+        'updated_at',
     ];
 }
