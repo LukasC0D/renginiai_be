@@ -12,7 +12,7 @@ class Event extends Model
         'pavadinimas',
         'data',
         'aprašymas',
-        'renginio vieta'
+        'renginio_vieta'
     ];
     protected $hidden = [
         'timestamps',
