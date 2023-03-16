@@ -13,7 +13,8 @@ class EventController extends Controller
     public function index(Request $request)
     {
 
-        return Event::all();
+        return Event::with('user')->get();
+
     }
 
     /**
@@ -33,11 +34,14 @@ class EventController extends Controller
             'name' => 'required|max:255',
             'date' => 'required|max:255',
             'description' => 'required|max:255',
-            'place' => 'required|max:255'
+            'place' => 'required|max:255',
 
         ]);
-        return Event::create($request->all());
-    }
+            $event = new Event($request->all());
+            $event->user_id = auth()->id();
+            $event->save();
+            return $event;
+       }
 
     /**
      * Display the specified resource.
@@ -66,10 +70,20 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+
     public function destroy($id)
-    {
-        return Event::destroy($id) === 0
-        ? response(["status" => "failure"], 404)
-        : response(["status" => "success"], 200);
+{
+    $event = Event::find($id);
+
+    if (!$event) {
+        return response(["status" => "failure"], 404);
     }
+
+    if ($event->user_id !== auth()->id()) {
+        return response(["status" => "failure"], 403);
+    }
+
+    $event->delete();
+    return response(["status" => "success"], 200);
+}
 }
