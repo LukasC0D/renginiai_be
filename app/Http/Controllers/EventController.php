@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -14,7 +16,6 @@ class EventController extends Controller
     {
 
         return Event::with('user')->get();
-
     }
 
     /**
@@ -37,11 +38,36 @@ class EventController extends Controller
             'place' => 'required|max:255',
 
         ]);
-            $event = new Event($request->all());
-            $event->user_id = auth()->id();
-            $event->save();
-            return $event;
-       }
+        $event = new Event($request->all());
+        $event->user_id = auth()->id();
+        $event->save();
+        return $event;
+    }
+
+    /**Prisirašymas į renginį */
+    public function participate(Request $request, $eventId)
+    {
+        $user = Auth::user();
+        $event = Event::find($eventId);
+
+        if (!$user || !$event) {
+            return response()->json(['error' => 'Invalid request.'], 400);
+        }
+        $eventUser = EventUser::where('user_id', $user->id)
+            ->where('event_id', $eventId)
+            ->first();
+
+        if ($eventUser) {
+            $eventUser->delete();
+            return response()->json(['success' => 'Jūs atšaukėte dalyvavimą renginyje'], 200);
+        } else {
+            $eventUser = new EventUser;
+            $eventUser->user_id = $user->id;
+            $eventUser->event_id = $event->id;
+            $eventUser->save();
+            return response()->json(['success' => 'Jūs užsirašėte į renginį'], 200);
+        }
+    }
 
     /**
      * Display the specified resource.
@@ -72,18 +98,18 @@ class EventController extends Controller
      */
 
     public function destroy($id)
-{
-    $event = Event::find($id);
+    {
+        $event = Event::find($id);
 
-    if (!$event) {
-        return response(["status" => "failure"], 404);
+        if (!$event) {
+            return response(["status" => "failure"], 404);
+        }
+
+        if ($event->user_id !== auth()->id()) {
+            return response(["status" => "failure"], 403);
+        }
+
+        $event->delete();
+        return response(["status" => "success"], 200);
     }
-
-    if ($event->user_id !== auth()->id()) {
-        return response(["status" => "failure"], 403);
-    }
-
-    $event->delete();
-    return response(["status" => "success"], 200);
-}
 }

@@ -26,3 +26,6 @@ Route::post('/logout', [ApiAuthController::class, 'logout'])->middleware('auth:s
 
 Route::resource('/event', EventController::class, ['only' => ['index', 'show']]);
 Route::resource('/event', EventController::class, ['except' => ['index', 'show']])->middleware('auth:sanctum');
+
+Route::post('/event/{eventId}/participate', [EventController::class, 'participate'])->middleware('auth:sanctum');
+Route::post('/event/{eventId}/cancel-participation', [EventController::class, 'participate'])->middleware('auth:sanctum');
