@@ -57,7 +57,7 @@ class EventController extends Controller
             ->leftJoin('event_users', 'events.id', '=', 'event_users.event_id')
             ->leftJoin('users', 'event_users.user_id', '=', 'users.id')
             ->where('events.id', $id)
-            ->select('events.*', 'users.name as name')
+            ->select('events.*', 'users.name as participant_name')
             ->get();
 
         if ($event === null) {
