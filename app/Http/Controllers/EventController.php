@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -18,6 +19,33 @@ class EventController extends Controller
         return Event::with('user')->get();
     }
 
+    /** Ateinatys renginiai
+     *
+     */
+    public function getComingEvents()
+    {
+        $today = date('Y-m-d');
+        $events = DB::table('events')
+            ->where('date', '>=', $today)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return response()->json($events);
+    }
+
+    /**Praėję renginiai
+     *
+     */
+    public function getPassedEvents()
+    {
+        $today = date('Y-m-d');
+        $events = DB::table('events')
+            ->where('date', '<=', $today)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return response()->json($events);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -44,7 +72,9 @@ class EventController extends Controller
         return $event;
     }
 
-    /**Prisirašymas į renginį */
+    /**Prisirašymas į renginį
+     *
+     */
     public function participate(Request $request, $eventId)
     {
         $user = Auth::user();

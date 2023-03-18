@@ -29,3 +29,7 @@ Route::resource('/event', EventController::class, ['except' => ['index', 'show']
 
 Route::post('/event/{eventId}/participate', [EventController::class, 'participate'])->middleware('auth:sanctum');
 Route::post('/event/{eventId}/cancel-participation', [EventController::class, 'participate'])->middleware('auth:sanctum');
+
+Route::get('coming-events', [EventController::class, 'getComingEvents']);
+Route::get('passed-events', [EventController::class, 'getPassedEvents']);
+
