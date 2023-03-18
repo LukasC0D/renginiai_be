@@ -46,6 +46,27 @@ class EventController extends Controller
 
         return response()->json($events);
     }
+
+    /**Renginių peržiūrėjimas
+     *
+     */
+
+    public function getEventUser($id)
+    {
+        $event = DB::table('events')
+            ->leftJoin('event_users', 'events.id', '=', 'event_users.event_id')
+            ->leftJoin('users', 'event_users.user_id', '=', 'users.id')
+            ->where('events.id', $id)
+            ->select('events.*', 'users.name as name')
+            ->get();
+
+        if ($event === null) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        return response()->json($event);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

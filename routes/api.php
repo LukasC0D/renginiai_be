@@ -32,4 +32,6 @@ Route::post('/event/{eventId}/cancel-participation', [EventController::class, 'p
 
 Route::get('coming-events', [EventController::class, 'getComingEvents']);
 Route::get('passed-events', [EventController::class, 'getPassedEvents']);
+Route::get('/event-user/{id}', [EventController::class, 'getEventUser']);
+
 
