@@ -58,11 +58,20 @@ class EventController extends Controller
             ->leftJoin('users', 'event_users.user_id', '=', 'users.id')
             ->where('events.id', $id)
             ->select('events.*', 'users.name as participant_name')
-            ->get();
+            ->get()
+            ->first();
 
-        if ($event === null) {
+        if (!$event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
+
+        $participants = DB::table('event_users')
+            ->join('users', 'event_users.user_id', '=', 'users.id')
+            ->where('event_users.event_id', $event->id)
+            ->pluck('users.name')
+            ->implode(', ');
+
+        $event->participant_names = $participants;
 
         return response()->json($event);
     }
